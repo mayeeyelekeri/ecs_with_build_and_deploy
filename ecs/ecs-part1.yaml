@@ -1,0 +1,52 @@
+# File: ecs-part1.yaml 
+# This module create all the ECS permissions and roles 
+#
+# Resource that would be created
+# 1) ECS Role 
+# 
+
+Description: "ECS Roles and permissions"
+
+  # 
+  # Create an ECS Role    
+  # 
+Resources: 
+   myECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: myecsrole1
+      Path: /
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+      Policies:
+        - PolicyName: "ECSFullAccessForMe"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+                -
+                  Effect: "Allow"
+                  Action:
+                      - ecr:GetAuthorizationToken
+                      - ecr:BatchCheckLayerAvailability
+                      - ecr:GetDownloadUrlForLayer
+                      - ecr:BatchGetImage
+                      - logs:BatchGetImage
+                      - logs:PutLogEvents
+                  Resource: "*"
+
+# Outputs 
+# 1) ECS Role
+# 
+Outputs:
+  ECSRole:
+    Value: !Ref myECSRole
+    Export:
+      "Name" :
+         Fn::Sub: "${AWS::StackName}-ECSRole"
