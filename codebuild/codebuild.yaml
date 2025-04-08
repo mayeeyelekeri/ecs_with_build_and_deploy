@@ -1,3 +1,16 @@
+# File: codebuild.yaml 
+# This module create all the codebuild project and roles 
+#
+# Before executing this, make sure "init.sh" is called which would create all "Parameter Store" 
+# and "Secrets manager" values 
+#
+# Resource that would be created
+# 1) ECS Cluster 
+# 2) ECS Task Definition  
+# 3) ECS Service 
+# 4) ECS Role 
+# 
+
 Description: "Create CodeBuild Projects"
 
 Parameters: 
@@ -26,6 +39,11 @@ Parameters:
     Default: springdemo
     
 Resources:
+    # Create CodeBuild Bucket for storing build artifacts    
+    # Inputs: 
+    #  From Parameter store
+    #  1) codebuild build prefix  
+    #   
   codebuildBucket:
     Description: "Create S3 bucket for storing codebuild artifacts"
     Type: AWS::S3::Bucket
@@ -38,6 +56,9 @@ Resources:
        - Key: Environment
          Value: !Sub ${environment}	
   
+  # 
+  # Get Git Credentials from secrets manager 
+  # 
   gitCreds1:
     Type: AWS::CodeBuild::SourceCredential
     Properties:
@@ -46,6 +67,17 @@ Resources:
         Token: '{{resolve:secretsmanager:git_creds:SecretString:token}}'
         Username: '{{resolve:secretsmanager:git_creds:SecretString:username}}'
   
+   # Create CodeBuild Project    
+   # Inputs: 
+   
+   #  1) CodeBuild bucket name 
+   #  2) Git Credentials  
+   #  3) CodeBuild Service Role 
+   #
+   #  From Parameter store
+   #  4) codebuild project name
+   #  5) Source code Git Repository   
+   #     
   codebuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -61,7 +93,7 @@ Resources:
           Resource: !Ref gitCreds1
           Type: OAUTH
 
-     Artifacts: # drop the build artifacts of S3 bucket that hosts static website
+     Artifacts: 
         Type: S3
         Location: !Sub arn:aws:s3:::${codebuildBucket}
         EncryptionDisabled: True
@@ -77,9 +109,20 @@ Resources:
         CloudWatchLogs:
           Status: ENABLED
           GroupName: "build-logs"
-          StreamName: !Sub '{{resolve:ssm:/${environment}/codebuild/project_name}}' 
+          StreamName: !Sub '{{resolve:ssm:/${environment}/codebuild/project_name}}'
      
   
+  # Create CodeBuild Project    
+  # This role should have access to the following:
+  # - S3
+  # - Parameter Sore 
+  # - Password manager 
+  # - Log group 
+  # 
+  # Inputs: 
+  #  1) Service Role name  
+  #  2) Git Credentials  
+  # 
   myCodebuildProjectRole:
     Type: AWS::IAM::Role
     Properties:
@@ -133,6 +176,11 @@ Resources:
                       - codebuild:BatchPutCodeCoverages
                   Resource: "*"
 
+# Outputs 
+# 1) Code Build bucket 
+# 2) Code Build project 
+# 3) Git Credentials 
+# 
 Outputs:
   BucketName:
     Value: !Ref codebuildBucket
