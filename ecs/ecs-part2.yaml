@@ -99,7 +99,7 @@ Resources:
      Cpu: 1 vCPU 
      NetworkMode: awsvpc
      ContainerDefinitions: 
-       - Name: !Sub ${containerName}
+       - Name: !Sub '{{resolve:ssm:/${environment}/ecs/container_name}}'
          Image: !Sub '{{resolve:ssm:/${environment}/ecs/ecr_repository}}'
          PortMappings: 
            - ContainerPort: 80
@@ -158,7 +158,7 @@ Resources:
                Fn::Sub: "${networkStackName}-PRIVATE-SUBNET2"
                
       LoadBalancers: 
-        - ContainerName: !Sub ${containerName}
+        - ContainerName: !Sub '{{resolve:ssm:/${environment}/ecs/container_name}}'
           ContainerPort: 80
           LoadBalancerName:
              Ref: "AWS::NoValue"
