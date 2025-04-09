@@ -166,7 +166,7 @@ Resources:
              Ref: "AWS::NoValue"
           TargetGroupArn:
              Fn::ImportValue: 
-               Fn::Sub: "${albStackName}-TARGET-GROUP"
+               Fn::Sub: "${albStackName}-TARGET-GROUP1"
                
       TaskDefinition: !Ref myEcsTaskDefinition
       Tags:
