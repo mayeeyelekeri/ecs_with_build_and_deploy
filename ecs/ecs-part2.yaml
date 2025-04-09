@@ -176,7 +176,7 @@ Resources:
                
       TaskDefinition: !Ref myEcsTaskDefinition
       PlatformVersion: LATEST
-        DeploymentController:
+      DeploymentController:
           Type: CODE_DEPLOY
       ServiceConnectConfiguration:
           Enabled: false
