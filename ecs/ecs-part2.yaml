@@ -133,51 +133,51 @@ Resources:
   #   5) Public Subnet 1 information from the "network" stack 
   #   6) ALB Target Group reference from the "alb" stack 
   # 
-  myEcsService:
-    Type: 'AWS::ECS::Service'
-    Properties:
-      ServiceName: !Sub '{{resolve:ssm:/${environment}/ecs/service_name}}'  
-      Cluster: !Sub '{{resolve:ssm:/${environment}/ecs/cluster_name}}' 
-      SchedulingStrategy: REPLICA
-      DesiredCount: 2
-      CapacityProviderStrategy:
-            - CapacityProvider: FARGATE
-              Base: 0
-              Weight: 1
-      AvailabilityZoneRebalancing: ENABLED
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
-          SecurityGroups:
-            - Fn::ImportValue: 
-               Fn::Sub: "${permStackName}-PUBLIC-SG"
-          Subnets:
-            - Fn::ImportValue: 
-               Fn::Sub: "${networkStackName}-PRIVATE-SUBNET1"
-            - Fn::ImportValue: 
-               Fn::Sub: "${networkStackName}-PRIVATE-SUBNET2"
-               
-      LoadBalancers: 
-        - ContainerName: !Sub '{{resolve:ssm:/${environment}/ecs/container_name}}'
-          ContainerPort: 80
-          LoadBalancerName:
-             Ref: "AWS::NoValue"
-          TargetGroupArn:
-             Fn::ImportValue: 
-               Fn::Sub: "${albStackName}-TARGET-GROUP1"
-               
-      TaskDefinition: !Ref myEcsTaskDefinition
-      PlatformVersion: LATEST
-      DeploymentController:
-          Type: CODE_DEPLOY
-      ServiceConnectConfiguration:
-          Enabled: false
-              
-      Tags:
-       - Key: Name
-         Value: !Join ["-", [Fn::Sub: "${AWS::StackName} ", "Service"] ]
-       - Key: Environment
-         Value: !Sub ${environment}
+#  myEcsService:
+#    Type: 'AWS::ECS::Service'
+#    Properties:
+#      ServiceName: !Sub '{{resolve:ssm:/${environment}/ecs/service_name}}'  
+#      Cluster: !Sub '{{resolve:ssm:/${environment}/ecs/cluster_name}}' 
+#      SchedulingStrategy: REPLICA
+#      DesiredCount: 2
+#      CapacityProviderStrategy:
+#            - CapacityProvider: FARGATE
+#              Base: 0
+#              Weight: 1
+#      AvailabilityZoneRebalancing: ENABLED
+#      NetworkConfiguration:
+#        AwsvpcConfiguration:
+#          AssignPublicIp: DISABLED
+#          SecurityGroups:
+#            - Fn::ImportValue: 
+#               Fn::Sub: "${permStackName}-PUBLIC-SG"
+#          Subnets:
+#            - Fn::ImportValue: 
+#               Fn::Sub: "${networkStackName}-PRIVATE-SUBNET1"
+#            - Fn::ImportValue: 
+#               Fn::Sub: "${networkStackName}-PRIVATE-SUBNET2"
+#               
+#      LoadBalancers: 
+#        - ContainerName: !Sub '{{resolve:ssm:/${environment}/ecs/container_name}}'
+#          ContainerPort: 80
+#          LoadBalancerName:
+#             Ref: "AWS::NoValue"
+#          TargetGroupArn:
+#             Fn::ImportValue: 
+#               Fn::Sub: "${albStackName}-TARGET-GROUP1"
+#               
+#      TaskDefinition: !Ref myEcsTaskDefinition
+#      PlatformVersion: LATEST
+#      DeploymentController:
+#          Type: CODE_DEPLOY
+#      ServiceConnectConfiguration:
+#          Enabled: false
+#              
+#      Tags:
+#       - Key: Name
+#         Value: !Join ["-", [Fn::Sub: "${AWS::StackName} ", "Service"] ]
+#       - Key: Environment
+#         Value: !Sub ${environment}
 
  # Outputs 
  # 1) ECS Cluster 
