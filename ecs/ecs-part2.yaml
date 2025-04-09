@@ -41,14 +41,6 @@ Parameters:
     Default: dev 
     AllowedValues: 
       - dev
-
-  containerName: 
-    Type: String 
-    Default: SpringDemo 
-    
-  serviceName: 
-      Type: String 
-      Default: myEcsService
         
 Conditions: 
   createOnlyProdResources: 
@@ -144,8 +136,8 @@ Resources:
   myEcsService:
     Type: 'AWS::ECS::Service'
     Properties:
-      ServiceName: !Sub ${serviceName} 
-      Cluster: !Ref myEcsCluster
+      ServiceName: !Sub '{{resolve:ssm:/${environment}/ecs/service_name}}'  
+      Cluster: !Sub '{{resolve:ssm:/${environment}/ecs/container_name}}' 
       SchedulingStrategy: REPLICA
       DesiredCount: 2
       CapacityProviderStrategy:

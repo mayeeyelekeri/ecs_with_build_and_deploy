@@ -145,6 +145,7 @@ Outputs:
     Export:
       "Name" :
         Fn::Sub: "${AWS::StackName}-TARGET-GROUP2"
+        
   Listener1:
     Value: !Ref listener1
     Export:
