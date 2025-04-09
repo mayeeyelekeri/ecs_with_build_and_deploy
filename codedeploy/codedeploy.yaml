@@ -155,9 +155,9 @@ Outputs:
       "Name" :
         Fn::Sub: "${AWS::StackName}-DEPLOY-ROLE"
 
-  CodeDeployGroup:
-    Value: !Ref myDeployGroup
-    Export:
-      "Name" :
-        Fn::Sub: "${AWS::StackName}-DEPLOY-GROUP"
+  #CodeDeployGroup:
+  #  Value: !Ref myDeployGroup
+   # Export:
+    #  "Name" :
+     #   Fn::Sub: "${AWS::StackName}-DEPLOY-GROUP"
 
