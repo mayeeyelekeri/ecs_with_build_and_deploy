@@ -32,31 +32,13 @@ Resources:
   myCodeDeployProject: 
     Type: AWS::CodeDeploy::Application
     Properties: 
-      ApplicationName: !Sub '{{resolve:ssm:/${environment}/codebuild/project_name}}' 
+      ApplicationName: !Sub '{{resolve:ssm:/${environment}/codebuild/project_name}}'
+      ComputePlatform: ECS
       Tags:
        - Key: Name
          Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "app "] ]
        - Key: Environment
          Value: !Sub ${environment}
-
-  myDeployGroup: 
-    Type: AWS::CodeDeploy::DeploymentGroup
-    Properties: 
-      DeploymentGroupName: mydeploygroup 
-      ApplicationName: !Ref myCodeDeployProject
-      ServiceRoleArn: !GetAtt myCodeDeployRole.Arn 
-      DeploymentConfigName: CodeDeployDefault.AllAtOnce
-      Ec2TagFilters: 
-       - Key: Name 
-         Value: ec2-PublicInstance 
-         Type: "KEY_AND_VALUE"
-
-      Tags:
-       - Key: Name
-         Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "app "] ]
-       - Key: Environment
-         Value: !Sub ${environment}
-
     
   myCodeDeployRole:
     Type: AWS::IAM::Role
@@ -72,7 +54,35 @@ Resources:
             Action:
               - sts:AssumeRole
       Policies:
-        - PolicyName: "S3"
+        - PolicyName: "ECS Access"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+                -
+                  Effect: "Allow"
+                  Action:
+                    - ecs:DescribeServices
+                    - ecs:CreateTaskSet
+                    - ecs:UpdateServicePrimaryTaskSet
+                    - ecs:DeleteTaskSet
+                    - elasticloadbalancing:DescribeTargetGroups
+                    - elasticloadbalancing:DescribeListeners
+                    - elasticloadbalancing:ModifyListener
+                    - elasticloadbalancing:DescribeRules
+                    - elasticloadbalancing:ModifyRule
+                    - lambda:InvokeFunction
+                    - cloudwatch:DescribeAlarms
+                    - sns:Publish
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                  Resource: "*"
+                -
+                 Effect: "Allow"
+                 Action:
+                    - iam:PassRole
+                 Resource: "*"        
+                           
+        - PolicyName: "S3 Acess"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
