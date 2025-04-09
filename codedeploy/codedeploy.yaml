@@ -99,10 +99,6 @@ Resources:
            ListenerArns:
            - Fn::ImportValue: 
                Fn::Sub: "${albStackName}-LISTENER1"
-        - TestTrafficRoute:
-           ListenerArns:
-           - Fn::ImportValue: 
-               Fn::Sub: "${albStackName}-LISTENER2"
           TargetGroups:
           - Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_1}}'
           - Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_2}}'
@@ -116,4 +112,21 @@ Resources:
             !Sub '{{resolve:ssm:/${environment}/ecs/service_name}}'
     DependsOn:
       - codeDeployApplication
-    
+      
+# Outputs 
+# 1) Code Build bucket 
+# 2) Code Build project 
+# 3) Git Credentials 
+# 
+Outputs:
+  CodeDeployAppName:
+    Value: !Ref codeDeployApplication
+    Export:
+     "Name" :
+       Fn::Sub: "${AWS::StackName}-CODEDEPLOY-APPLICATION"
+  
+  CodeDeployDeploymentGroup:
+    Value: !Ref codeDeployDeploymentGroup
+    Export:
+     "Name" :
+       Fn::Sub: "${AWS::StackName}-CODEDEPLOY-DEPLOYMENT-GROUP"
