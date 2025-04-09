@@ -153,7 +153,6 @@ Resources:
               Base: 0
               Weight: 1
       AvailabilityZoneRebalancing: ENABLED
-      LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED

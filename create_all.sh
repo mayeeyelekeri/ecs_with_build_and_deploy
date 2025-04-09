@@ -6,7 +6,7 @@ SECONDS=0
 #### For signature error, run the command
 sudo /usr/sbin/ntpdate pool.ntp.org
 
-dirs=(network permissions alb codebuild) 
+dirs=(network permissions alb codebuild ecs) 
 #dirs=(network permissions alb autoscale codebuild codedeploy codepipeline lambda) 
 
 # Change into each directory and execute create stack script 
