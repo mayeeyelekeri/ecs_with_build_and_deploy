@@ -57,16 +57,10 @@ Resources:
       TargetType: ip 
       Tags:
         - Key: Name
-          Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "TargetGroup"]]
+          Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "TargetGroup-1"]]
         - Key: Environment
           Value: !Sub ${environment}
 
-  # Create a target group for application port
-  # This will only create the target group, EC2 instances are attached from the autoscaling group 
-  # Inputs: 
-  # 1) application Port from Parameter store 
-  # 2) VPC ID (from network stack)
-  # 3) Port 8080   
   targetGroup2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -75,13 +69,14 @@ Resources:
       Port: 8080
       VpcId: 
         Fn::ImportValue: 
-          Fn::Sub: "${networkStackName}-VPCID"
+         Fn::Sub: "${networkStackName}-VPCID"
       TargetType: ip 
-    Tags:
-      - Key: Name
-        Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "TargetGroup"]]
-      - Key: Environment
-        Value: !Sub ${environment}
+      Tags:
+        - Key: Name
+          Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "TargetGroup-2"]]
+        - Key: Environment
+          Value: !Sub ${environment}
+
   # Create application load balancer and attach the target group 
   # No need to attach any "targets" at this point, it will be done by ECS service 
   # Inputs: 
@@ -101,11 +96,6 @@ Resources:
            Fn::Sub: "${networkStackName}-PUBLIC-SUBNET1"
         - Fn::ImportValue: 
            Fn::Sub: "${networkStackName}-PUBLIC-SUBNET2"
-    Tags:
-    - Key: Name
-         Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "alb"] ]
-    - Key: Environment
-         Value: !Sub ${environment}	
 
   # Create a listener on port "80"
   listener1:

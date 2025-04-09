@@ -17,6 +17,7 @@ echo environment is $environment
 ./network/init.sh $1
 ./permissions/init.sh $1
 ./alb/init.sh $1
+./codebuild/init.sh $1
 cd ecs && ./init.sh $1
 
 
