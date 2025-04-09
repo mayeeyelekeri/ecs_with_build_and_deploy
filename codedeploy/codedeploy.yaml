@@ -21,6 +21,16 @@ Parameters:
     Type: String
     Default: autoscale
 
+  ecs1StackName:
+    Description: Name of the base stack with all network resources
+    Type: String
+    Default: ecs-part1
+
+  ecs2StackName:
+    Description: Name of the base stack with all network resources
+    Type: String
+    Default: ecs-part2
+
   environment: 
     Type: String 
     Default: dev 
@@ -33,7 +43,8 @@ Resources:
   codeDeployApplication: 
     Type: AWS::CodeDeploy::Application
     Properties: 
-      ApplicationName: !Sub '{{resolve:ssm:/${environment}/codebuild/project_name}}'
+      ApplicationName: 
+         !Sub '{{resolve:ssm:/${environment}/codedeploy/application_name}}'
       ComputePlatform: ECS
       Tags:
        - Key: Name
@@ -42,13 +53,12 @@ Resources:
          Value: !Sub ${environment}
 
 
-  CodeDeployDeploymentGroup:
+  codeDeployDeploymentGroup:
     Type: AWS::CodeDeploy::DeploymentGroup
     Properties:
       ApplicationName:
-        Ref: ApplicationName
-      DeploymentGroupName:
-             Ref: DeploymentGroupName
+         !Sub '{{resolve:ssm:/${environment}/codedeploy/application_name}}'
+      DeploymentGroupName: !Sub '{{resolve:ssm:/${environment}/codedeploy/deploy_group_name}}'
       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
       AutoRollbackConfiguration:
         Enabled: true
@@ -74,20 +84,14 @@ Resources:
           TargetGroups:
           - Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_1}}'
           - Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_2}}'
-        ServiceRoleArn: 
+      ServiceRoleArn: 
           Fn::ImportValue: 
-             Fn::Sub: "${ecsStackName}-CODEDEPLOY-ROLE"
-        ECSServices:
-        - ClusterName:
+             Fn::Sub: "${ecs1StackName}-CODEDEPLOY-ROLE-ARN"
+      ECSServices:
+      - ClusterName:
             !Sub '{{resolve:ssm:/${environment}/ecs/cluster_name}}'
-          ServiceName:
+        ServiceName:
             !Sub '{{resolve:ssm:/${environment}/ecs/service_name}}'
-        Tags: []
     DependsOn:
-      - CodeDeployApplication
+      - codeDeployApplication
     
-    Tags:
-       - Key: Name
-         Value: !Join ["-", [Fn::Sub: "${AWS::StackName} ", "DeploymentGroup"] ]
-       - Key: Environment
-         Value: !Sub ${environment}

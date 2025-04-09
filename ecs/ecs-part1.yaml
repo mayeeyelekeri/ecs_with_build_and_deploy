@@ -157,8 +157,16 @@ Outputs:
     Export:
       "Name" :
          Fn::Sub: "${AWS::StackName}-ECSRole"
-  CodeDeployRole:
+
+  CodeDeployRoleName:
     Value: !Ref myCodeDeployRole
     Export:
       "Name" :
          Fn::Sub: "${AWS::StackName}-CODEDEPLOY-ROLE" 
+
+  CodeDeployRoleArn:
+    Value: 
+      "Fn::GetAtt": ["myCodeDeployRole", "Arn"]
+    Export:
+      "Name" :
+         Fn::Sub: "${AWS::StackName}-CODEDEPLOY-ROLE-ARN" 
