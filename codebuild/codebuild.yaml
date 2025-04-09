@@ -67,16 +67,23 @@ Resources:
         Token: '{{resolve:secretsmanager:git_creds:SecretString:token}}'
         Username: '{{resolve:secretsmanager:git_creds:SecretString:username}}'
   
-   # Create CodeBuild Project    
+   # Create CodeBuild Project to perform maven build 
+   # Also enable cloudwatch logs 
+   #   
    # Inputs: 
    
    #  1) CodeBuild bucket name 
    #  2) Git Credentials  
    #  3) CodeBuild Service Role 
-   #
+   #  
+   #  Build environment Information like: 
+   #  4) Build Image (its an aws docker image)
+   #  5) Compute Type (small)
+   #  6) Image Type (linux container)
+   #  
    #  From Parameter store
-   #  4) codebuild project name
-   #  5) Source code Git Repository   
+   #  7) codebuild project name
+   #  8) Source code Git Repository   
    #     
   codebuildProject:
     Type: AWS::CodeBuild::Project
@@ -175,7 +182,30 @@ Resources:
                       - codebuild:BatchPutTestCases
                       - codebuild:BatchPutCodeCoverages
                   Resource: "*"
-
+        - PolicyName: "ECR"
+          PolicyDocument:
+             Version: "2012-10-17"
+             Statement:
+              -
+               Effect: "Allow"
+               Action:
+                 - ecr:GetAuthorizationToken
+                 - ecr:GetAuthorizationToken
+                 - ecr:GetDownloadUrlForLayer
+                 - ecr:GetRepositoryPolicy
+                 - ecr:DescribeRepositories
+                 - ecr:ListImages 
+                 - ecr:DescribeImages
+                 - ecr:BatchGetImage
+                 - ecr:GetLifecyclePolicy
+                 - ecr:GetLifecyclePolicyPreview
+                 - ecr:ListTagsForResource
+                 - ecr:DescribeImageScanFindings
+                 - ecr:InitiateLayerUpload
+                 - ecr:UploadLayerPart
+                 - ecr:CompleteLayerUpload
+                 - ecr:PutImage
+               Resource: "*"
 # Outputs 
 # 1) Code Build bucket 
 # 2) Code Build project 
