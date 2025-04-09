@@ -29,6 +29,7 @@ Parameters:
       - prod 
 
 Resources:
+    
   myCodeDeployProject: 
     Type: AWS::CodeDeploy::Application
     Properties: 
@@ -80,8 +81,12 @@ Resources:
                  Effect: "Allow"
                  Action:
                     - iam:PassRole
-                 Resource: "*"        
-                           
+                 Resource: "*"      
+                 Condition:
+                   StringLike:
+                     iam:PassedToService:
+                     - ecs-tasks.amazonaws.com
+                             
         - PolicyName: "S3 Acess"
           PolicyDocument:
             Version: "2012-10-17"
