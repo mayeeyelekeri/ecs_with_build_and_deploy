@@ -45,10 +45,10 @@ Resources:
   # 1) application Port from Parameter store 
   # 2) VPC ID (from network stack)
   #    
-  targetGroup:
+  targetGroup1:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: my-target-group
+      Name: my-target-group1
       Protocol: HTTP
       Port: 80
       VpcId: 
@@ -61,6 +61,27 @@ Resources:
         - Key: Environment
           Value: !Sub ${environment}
 
+  # Create a target group for application port
+  # This will only create the target group, EC2 instances are attached from the autoscaling group 
+  # Inputs: 
+  # 1) application Port from Parameter store 
+  # 2) VPC ID (from network stack)
+  # 3) Port 8080   
+  targetGroup2:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: my-target-group2
+      Protocol: HTTP
+      Port: 8080
+      VpcId: 
+        Fn::ImportValue: 
+          Fn::Sub: "${networkStackName}-VPCID"
+      TargetType: ip 
+    Tags:
+      - Key: Name
+        Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "TargetGroup"]]
+      - Key: Environment
+        Value: !Sub ${environment}
   # Create application load balancer and attach the target group 
   # No need to attach any "targets" at this point, it will be done by ECS service 
   # Inputs: 
@@ -87,7 +108,7 @@ Resources:
          Value: !Sub ${environment}	
 
   # Create a listener on port "80"
-  listener:
+  listener1:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref alb
@@ -95,7 +116,18 @@ Resources:
       Protocol: HTTP
       DefaultActions: 
       - Type: "forward" 
-        TargetGroupArn: !Ref targetGroup
+        TargetGroupArn: !Ref targetGroup1
+               
+  # Create a listener on port "80"
+  listener2:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref alb
+      Port: 8080
+      Protocol: HTTP
+      DefaultActions: 
+      - Type: "forward" 
+        TargetGroupArn: !Ref targetGroup2
 
 # Export the following 2 values 
 # 1) alb : alb-ALB 
@@ -107,11 +139,17 @@ Outputs:
     Export:
       "Name" :
         Fn::Sub: "${AWS::StackName}-ALB"
-        
-  TargetGroup:
-    Value: !Ref targetGroup
+  
+  TargetGroup1:
+    Value: !Ref targetGroup1
     Export:
       "Name" :
-        Fn::Sub: "${AWS::StackName}-TARGET-GROUP"
+        Fn::Sub: "${AWS::StackName}-TARGET-GROUP1"
+                      
+  TargetGroup2:
+    Value: !Ref targetGroup2
+    Export:
+      "Name" :
+        Fn::Sub: "${AWS::StackName}-TARGET-GROUP2"
 
 
