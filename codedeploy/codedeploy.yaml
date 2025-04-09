@@ -40,6 +40,11 @@ Parameters:
 
 Resources:
     
+  # 
+  # Create CodeDeploy application for ECS 
+  # Inputs: 
+  # 1) CodeDeploy Application name (from parameter store)
+  # 
   codeDeployApplication: 
     Type: AWS::CodeDeploy::Application
     Properties: 
@@ -53,6 +58,19 @@ Resources:
          Value: !Sub ${environment}
 
 
+  # 
+  # Create CodeDeploy Deployment Group using Blue Green strategy 
+  # Inputs: 
+  # 1) CodeDeployRole ARN for ECS access (from ECS part1 stack)
+  # 2) ALB Listern ARN (from ALB stack)
+  #
+  # From Parameter Store:
+  #  3) Target Group names (1 and 2) 
+  #  4) CodeDeploy Application name 
+  #  5) Deployment group name 
+  #  6) ECS Cluster name 
+  #  7) ECS Service name 
+  # 
   codeDeployDeploymentGroup:
     Type: AWS::CodeDeploy::DeploymentGroup
     Properties:
@@ -81,6 +99,10 @@ Resources:
            ListenerArns:
            - Fn::ImportValue: 
                Fn::Sub: "${albStackName}-LISTENER1"
+        - TestTrafficRoute:
+           ListenerArns:
+           - Fn::ImportValue: 
+               Fn::Sub: "${albStackName}-LISTENER2"
           TargetGroups:
           - Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_1}}'
           - Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_2}}'
