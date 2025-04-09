@@ -61,7 +61,7 @@ Resources:
     Description: "New ECS Cluster"                        
     Type: AWS::ECS::Cluster
     Properties:                                                                  
-     ClusterName: !Sub '{{resolve:ssm:/${environment}/ecs/cluster_name}}'                 
+     ClusterName: !Sub '{{resolve:ssm:/${environment}/ecs/cluster_name}}'              
      CapacityProviders: 
        - FARGATE
      ClusterSettings: 
