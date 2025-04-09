@@ -48,7 +48,7 @@ Resources:
   targetGroup1:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: my-target-group1
+      Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_1}}'
       Protocol: HTTP
       Port: 80
       VpcId: 
@@ -64,7 +64,7 @@ Resources:
   targetGroup2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: my-target-group2
+      Name: !Sub '{{resolve:ssm:/${environment}/alb/target_group_2}}'
       Protocol: HTTP
       Port: 8080
       VpcId: 
@@ -77,7 +77,7 @@ Resources:
         - Key: Environment
           Value: !Sub ${environment}
 
-  # Create application load balancer and attach the target group 
+  # Create application load balancer and specify the subnets 
   # No need to attach any "targets" at this point, it will be done by ECS service 
   # Inputs: 
   # 1) Security Group (from permissions stack) 
@@ -98,6 +98,8 @@ Resources:
            Fn::Sub: "${networkStackName}-PUBLIC-SUBNET2"
 
   # Create a listener on port "80"
+  # Attach it to ALB 
+  # Forward the listener to "Target Group 1"
   listener1:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -108,7 +110,9 @@ Resources:
       - Type: "forward" 
         TargetGroupArn: !Ref targetGroup1
                
-  # Create a listener on port "80"
+  # Create another listener on port "8080"
+  # Attach it to ALB 
+  # Forward the listener to "Target Group 2"
   listener2:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -121,8 +125,8 @@ Resources:
 
 # Export the following 2 values 
 # 1) alb : alb-ALB 
-# 2) target group - alb-TARGET_GROUP  (This will be using in ECS Service resource)
-#
+# 2) target group2 - alb-TARGET_GROUP1   
+# 3) target group2 - alb-TARGET_GROUP2
 Outputs:
   LoadBalancer:
     Value: !Ref alb
@@ -141,5 +145,15 @@ Outputs:
     Export:
       "Name" :
         Fn::Sub: "${AWS::StackName}-TARGET-GROUP2"
-
+  Listener1:
+    Value: !Ref listener1
+    Export:
+      "Name" :
+        Fn::Sub: "${AWS::StackName}-LISTENER1"
+              
+  Listener2:
+    Value: !Ref listener2
+    Export:
+      "Name" :
+        Fn::Sub: "${AWS::StackName}-LISTENER2"
 
