@@ -55,7 +55,7 @@ Resources:
             Action:
               - sts:AssumeRole
       Policies:
-        - PolicyName: "ECS Access"
+        - PolicyName: "ECSAccess"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -87,7 +87,7 @@ Resources:
                      iam:PassedToService:
                      - ecs-tasks.amazonaws.com
                              
-        - PolicyName: "S3 Acess"
+        - PolicyName: "S3Access"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
