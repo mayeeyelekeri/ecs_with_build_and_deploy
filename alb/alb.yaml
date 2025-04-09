@@ -101,10 +101,10 @@ Resources:
            Fn::Sub: "${networkStackName}-PUBLIC-SUBNET1"
         - Fn::ImportValue: 
            Fn::Sub: "${networkStackName}-PUBLIC-SUBNET2"
-      Tags:
-       - Key: Name
+    Tags:
+    - Key: Name
          Value: !Join [" - ", [Fn::Sub: "${AWS::StackName}", "alb"] ]
-       - Key: Environment
+    - Key: Environment
          Value: !Sub ${environment}	
 
   # Create a listener on port "80"
