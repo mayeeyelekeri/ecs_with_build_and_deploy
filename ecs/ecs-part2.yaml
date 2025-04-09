@@ -146,7 +146,13 @@ Resources:
     Properties:
       ServiceName: !Sub ${serviceName} 
       Cluster: !Ref myEcsCluster
+      SchedulingStrategy: REPLICA
       DesiredCount: 2
+      CapacityProviderStrategy:
+            - CapacityProvider: FARGATE
+              Base: 0
+              Weight: 1
+      AvailabilityZoneRebalancing: ENABLED
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
@@ -159,6 +165,7 @@ Resources:
                Fn::Sub: "${networkStackName}-PRIVATE-SUBNET1"
             - Fn::ImportValue: 
                Fn::Sub: "${networkStackName}-PRIVATE-SUBNET2"
+               
       LoadBalancers: 
         - ContainerName: !Sub ${containerName}
           ContainerPort: 80
@@ -169,6 +176,12 @@ Resources:
                Fn::Sub: "${albStackName}-TARGET-GROUP1"
                
       TaskDefinition: !Ref myEcsTaskDefinition
+      PlatformVersion: LATEST
+        DeploymentController:
+          Type: CODE_DEPLOY
+      ServiceConnectConfiguration:
+          Enabled: false
+              
       Tags:
        - Key: Name
          Value: !Join ["-", [Fn::Sub: "${AWS::StackName} ", "Service"] ]
