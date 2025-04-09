@@ -137,7 +137,7 @@ Resources:
     Type: 'AWS::ECS::Service'
     Properties:
       ServiceName: !Sub '{{resolve:ssm:/${environment}/ecs/service_name}}'  
-      Cluster: !Sub '{{resolve:ssm:/${environment}/ecs/container_name}}' 
+      Cluster: !Sub '{{resolve:ssm:/${environment}/ecs/cluster_name}}' 
       SchedulingStrategy: REPLICA
       DesiredCount: 2
       CapacityProviderStrategy:
