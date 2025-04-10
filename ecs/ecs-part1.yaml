@@ -7,14 +7,18 @@
 
 Description: "ECS Roles and permissions"
 
-  # 
-  # Create an ECS Role    
-  # 
+   
 Resources: 
+  
+   # 
+   # Create an a Role for ECS to pull images from ECR     
+   # Also to log events in cloudwatch 
+   # This will be used by ECS 
+   #
    myECSRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: myecsrole1
+      RoleName: !Sub '{{resolve:ssm:/${environment}/ecs/ecs_role_name}}' 
       Path: /
       AssumeRolePolicyDocument:
         Statement:
@@ -41,10 +45,17 @@ Resources:
                       - logs:PutLogEvents
                   Resource: "*"
 
+   # 
+   # CodeDeploy role
+   # Permissions required:
+   # 1) S3 full access
+   # 2) ECS Full access (to update ECS Service)
+   # 3) ALB full access  
+   #
    myCodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: mycodedeployrole
+      RoleName: !Sub '{{resolve:ssm:/${environment}/ecs/codedeploy_role_name}}' 
       Path: /
       AssumeRolePolicyDocument:
         Statement:
@@ -152,21 +163,14 @@ Resources:
 # 2) Code Deploy Role (ecs-CODEDEPLOY_ROLE)
 # 
 Outputs:
-  ECSRole:
+  ECSRoleArn:
     Value: !Ref myECSRole
     Export:
       "Name" :
-         Fn::Sub: "${AWS::StackName}-ECSRole"
+         Fn::Sub: "${AWS::StackName}-ECS-ROLE-ARN"
 
-  CodeDeployRoleName:
+  CodeDeployRoleArn:
     Value: !Ref myCodeDeployRole
     Export:
       "Name" :
-         Fn::Sub: "${AWS::StackName}-CODEDEPLOY-ROLE" 
-
-  CodeDeployRoleArn:
-    Value: 
-      "Fn::GetAtt": ["myCodeDeployRole", "Arn"]
-    Export:
-      "Name" :
-         Fn::Sub: "${AWS::StackName}-CODEDEPLOY-ROLE-ARN" 
+         Fn::Sub: "${AWS::StackName}-CODEDEPLOY-ROLE-ARN"
