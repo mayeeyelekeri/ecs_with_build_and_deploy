@@ -7,7 +7,13 @@
 
 Description: "ECS Roles and permissions"
 
-   
+Parameters: 
+    environment: 
+      Type: String 
+      Default: dev 
+      AllowedValues: 
+        - dev
+         
 Resources: 
   
    # 
@@ -164,13 +170,15 @@ Resources:
 # 
 Outputs:
   ECSRoleArn:
-    Value: !Ref myECSRole
+    Value: 
+      "Fn::GetAtt": ["myECSRole", "Arn"]
     Export:
       "Name" :
          Fn::Sub: "${AWS::StackName}-ECS-ROLE-ARN"
 
   CodeDeployRoleArn:
-    Value: !Ref myCodeDeployRole
+    Value: 
+      "Fn::GetAtt": ["myCodeDeployRole", "Arn"]
     Export:
       "Name" :
          Fn::Sub: "${AWS::StackName}-CODEDEPLOY-ROLE-ARN"
