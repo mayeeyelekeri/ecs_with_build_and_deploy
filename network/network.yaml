@@ -9,6 +9,7 @@
 # 3) Zone 2 - public subnet2, private subnet2 
 # 4) Internet Gateway, and attach Internet gateway to VPC 
 # 6) Create Route table1, make it public by attaching Internet gateway
+# 
 # Commented NAT related items 
 ### 7) Create NAT Gateway in public subnet 1  
 ### 8) Create Route table2, attach NAT Gateway 
@@ -155,7 +156,7 @@ Resources:
       
  #
  # Create Route table2   
-   privateRouteTable: 
+  privateRouteTable: 
      Type: AWS::EC2::RouteTable
      Properties: 
        VpcId: !Ref myVPC 
