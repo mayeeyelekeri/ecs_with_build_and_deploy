@@ -140,7 +140,7 @@ Resources:
       ServiceName: !Sub '{{resolve:ssm:/${environment}/ecs/service_name}}'  
       Cluster: !Sub '{{resolve:ssm:/${environment}/ecs/cluster_name}}' 
       SchedulingStrategy: REPLICA
-      DesiredCount: 2
+      DesiredCount: 1
       CapacityProviderStrategy:
             - CapacityProvider: FARGATE
               Base: 0
@@ -148,15 +148,15 @@ Resources:
       AvailabilityZoneRebalancing: ENABLED
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
+          AssignPublicIp: ENABLED
           SecurityGroups:
             - Fn::ImportValue: 
                Fn::Sub: "${permStackName}-PUBLIC-SG"
           Subnets:
             - Fn::ImportValue: 
-               Fn::Sub: "${networkStackName}-PRIVATE-SUBNET1"
+               Fn::Sub: "${networkStackName}-PUBLIC-SUBNET1"
             - Fn::ImportValue: 
-               Fn::Sub: "${networkStackName}-PRIVATE-SUBNET2"
+               Fn::Sub: "${networkStackName}-PUBLIC-SUBNET2"
                
       LoadBalancers: 
         - ContainerName: !Sub '{{resolve:ssm:/${environment}/ecs/container_name}}'

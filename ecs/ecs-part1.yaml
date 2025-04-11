@@ -24,7 +24,7 @@ Resources:
    myECSRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '{{resolve:ssm:/${environment}/ecs/ecs_role_name}}' 
+      RoleName: !Sub '{{resolve:ssm:/${environment}/ecs/ecs_role_name}}'
       Path: /
       AssumeRolePolicyDocument:
         Statement:
@@ -36,7 +36,7 @@ Resources:
               - sts:AssumeRole
 
       Policies:
-        - PolicyName: "ECSFullAccessForMe"
+        - PolicyName: "AmazonECSTaskExecutionRolePolicy"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -47,7 +47,7 @@ Resources:
                       - ecr:BatchCheckLayerAvailability
                       - ecr:GetDownloadUrlForLayer
                       - ecr:BatchGetImage
-                      - logs:BatchGetImage
+                      - logs:CreateLogStream
                       - logs:PutLogEvents
                   Resource: "*"
 
@@ -163,6 +163,7 @@ Resources:
                       - elasticloadbalancing:RegisterTargets
                       - elasticloadbalancing:DeregisterTargets
                   Resource: "*"
+
 
 # Outputs 
 # 1) ECS Role (ecs-ECSRole) 
