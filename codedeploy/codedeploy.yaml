@@ -120,8 +120,7 @@ Resources:
 # 
 Outputs:
   CodeDeployAppName:
-    Value: 
-        "Fn::GetAtt": ["codeDeployApplication", "Arn"]
+    Value: !Ref codeDeployApplication
     Export:
      "Name" :
        Fn::Sub: "${AWS::StackName}-CODEDEPLOY-APPLICATION"
