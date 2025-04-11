@@ -18,6 +18,7 @@ echo environment is $environment
 ./permissions/init.sh $1
 ./alb/init.sh $1
 ./codebuild/init.sh $1
+./codedeploy/init.sh $1
 cd ecs && ./init.sh $1
 
 
